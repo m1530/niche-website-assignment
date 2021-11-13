@@ -66,13 +66,6 @@ async function run() {
             const result = await cursor.toArray();
             res.json(result);
         });
-        // delete Order
-        app.delete('/order/:id', async (req, res) => {
-            const itemId = req.params.id;
-            const query = { _id: ObjectId(itemId) };
-            const result = await orderCollection.deleteOne(query);
-            res.json(result);
-        });
 
         // insert user info from email
         app.post('/users', async (req, res) => {
@@ -108,7 +101,13 @@ async function run() {
             const result = await orderCollection.find(data).toArray();
             res.json(result);
         });
-
+        // delete my order Order
+        app.delete('/order/:id', async (req, res) => {
+            const itemId = req.params.id;
+            const query = { _id: ObjectId(itemId) };
+            const result = await orderCollection.deleteOne(query);
+            res.json(result);
+        });
 
         // delete my order
         app.delete('/orders/:id', async (req, res) => {
@@ -116,6 +115,20 @@ async function run() {
             const query = { _id: ObjectId(itemId) };
             const result = await orderCollection.deleteOne(query);
             res.json(result);
+        });
+        //update status
+        app.put('/order/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedStatus = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    status: updatedStatus.status
+                },
+            };
+            const result = await orderCollection.updateOne(filter, updateDoc, options);
+            res.json(result)
         });
 
         // make admin
@@ -138,22 +151,6 @@ async function run() {
                 }
             }
             res.json({ admin: isAdmin });
-        });
-
-
-        //update status
-        app.put('/order/:id', async (req, res) => {
-            const id = req.params.id;
-            const updatedStatus = req.body;
-            const filter = { _id: ObjectId(id) };
-            const options = { upsert: true };
-            const updateDoc = {
-                $set: {
-                    status: updatedStatus.status
-                },
-            };
-            const result = await orderCollection.updateOne(filter, updateDoc, options);
-            res.json(result)
         });
 
         // get all News
