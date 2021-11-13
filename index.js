@@ -22,6 +22,7 @@ async function run() {
         const usersCollection = database.collection('users');
         const reviewCollection = database.collection('review');
         const newsCollection = database.collection('news');
+        const subscribeCollection = database.collection('subscribe');
 
         // get all services from database
         app.get('/products', async (req, res) => {
@@ -174,6 +175,28 @@ async function run() {
         app.post('/addNews', async (req, res) => {
             const data = req.body;
             const result = await newsCollection.insertOne(data);
+            res.json(result);
+        });
+
+        // create new subscribe
+        app.post('/subscribe', async (req, res) => {
+            const data = req.body;
+            const result = await subscribeCollection.insertOne(data);
+            res.json(result);
+        });
+
+        // get all subscription
+        app.get('/subscribe', async (req, res) => {
+            const cursor = subscribeCollection.find({});
+            const result = await cursor.toArray();
+            res.json(result);
+        });
+
+        // delete Subscription
+        app.delete('/subscribe/:id', async (req, res) => {
+            const subscriberId = req.params.id;
+            const query = { _id: ObjectId(subscriberId) };
+            const result = await subscribeCollection.deleteOne(query);
             res.json(result);
         });
 
